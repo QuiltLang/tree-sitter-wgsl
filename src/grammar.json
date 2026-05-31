@@ -1,38 +1,47 @@
 {
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "wgsl",
   "word": "identifier",
   "rules": {
     "source_file": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "enable_directive"
-          }
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_declaration"
-          }
-        }
-      ]
-    },
-    "comment": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "line_comment"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "enable_directive"
+              }
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_declaration"
+              }
+            }
+          ]
         },
         {
           "type": "SYMBOL",
-          "name": "block_comment"
+          "name": "_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "switch_body"
         }
       ]
+    },
+    "quilt_hole": {
+      "type": "STRING",
+      "value": "__QUILT_HOLE__"
     },
     "line_comment": {
       "type": "TOKEN",
@@ -723,92 +732,100 @@
       ]
     },
     "_statement": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "compound_statement"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "assignment_statement"
-            },
-            {
-              "type": "STRING",
-              "value": ";"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "if_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "switch_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "loop_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "for_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "while_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "break_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "continue_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "discard_statement"
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "return_statement"
-            },
-            {
-              "type": "STRING",
-              "value": ";"
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "variable_statement"
-            },
-            {
-              "type": "STRING",
-              "value": ";"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "increment_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "decrement_statement"
-        }
-      ]
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "quilt_hole"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "compound_statement"
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "assignment_statement"
+              },
+              {
+                "type": "STRING",
+                "value": ";"
+              }
+            ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "if_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "switch_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "loop_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "for_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "while_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "break_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "continue_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "discard_statement"
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "return_statement"
+              },
+              {
+                "type": "STRING",
+                "value": ";"
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "variable_statement"
+              },
+              {
+                "type": "STRING",
+                "value": ";"
+              }
+            ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "increment_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "decrement_statement"
+          }
+        ]
+      }
     },
     "compound_statement": {
       "type": "SEQ",
@@ -1026,6 +1043,10 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "quilt_hole"
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -1082,37 +1103,46 @@
       ]
     },
     "case_selectors": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "const_literal"
+          "name": "quilt_hole"
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "const_literal"
-              }
-            ]
-          }
-        },
-        {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
             {
-              "type": "STRING",
-              "value": ","
+              "type": "SYMBOL",
+              "name": "const_literal"
             },
             {
-              "type": "BLANK"
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "const_literal"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             }
           ]
         }
@@ -1642,6 +1672,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "quilt_hole"
+        },
+        {
+          "type": "SYMBOL",
           "name": "const_literal"
         },
         {
@@ -1868,6 +1902,10 @@
                         {
                           "type": "SYMBOL",
                           "name": "identifier"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "quilt_hole"
                         }
                       ]
                     }
@@ -3387,7 +3425,24 @@
       "value": "[\\s\\uFEFF\\u2060\\u200B\\u00A0]"
     }
   ],
-  "conflicts": [],
+  "conflicts": [
+    [
+      "_expression",
+      "lhs_expression"
+    ],
+    [
+      "global_variable_declaration",
+      "variable_statement"
+    ],
+    [
+      "_expression",
+      "const_expression"
+    ],
+    [
+      "const_expression",
+      "argument_list_expression"
+    ]
+  ],
   "precedences": [],
   "externals": [
     {
@@ -3396,6 +3451,6 @@
     }
   ],
   "inline": [],
-  "supertypes": []
+  "supertypes": [],
+  "reserved": {}
 }
-

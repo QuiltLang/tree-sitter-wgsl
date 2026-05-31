@@ -28,8 +28,32 @@ module.exports = grammar({
         $.block_comment,
     ],
 
+    // Quilt fork: letting `source_file` start with a bare `_expression` (so an
+    // expression fragment can be quoted) makes `identifier[...]` ambiguous
+    // between a subscript `_expression` and an assignment-target `lhs_expression`
+    // until the following token is seen; resolve via GLR.
+    conflicts: $ => [
+        [$._expression, $.lhs_expression],
+        [$.global_variable_declaration, $.variable_statement],
+        [$._expression, $.const_expression],
+        [$.const_expression, $.argument_list_expression],
+    ],
+
     rules: {
-        source_file: $ => seq(repeat($.enable_directive), repeat($._declaration)),
+        // Quilt fork: a quoted fragment is parsed as a whole `source_file`, so
+        // `source_file` must also accept the granularities Quilt quotes: a bare
+        // statement, a bare expression, or a single `switch` case.
+        source_file: $ => choice(
+            seq(repeat($.enable_directive), repeat($._declaration)),
+            $._statement,
+            $._expression,
+            $.switch_body,
+        ),
+
+        // Quilt hole: the placeholder another language's term is dropped into.
+        // Not a valid WGSL identifier (the identifier regex forbids a `_` in the
+        // second position), so it never collides with real code.
+        quilt_hole: $ => "__QUILT_HOLE__",
 
         line_comment: $ => token(seq('//', /.*/)),
 
@@ -132,7 +156,10 @@ module.exports = grammar({
             $.variable_identifier_declaration
         ),
 
-        _statement: $ => choice(
+        // `prec` only disambiguates a *standalone* hole fragment at `source_file`
+        // scope (hole-as-statement wins over hole-as-expression / -switch_body).
+        _statement: $ => prec(1, choice(
+            $.quilt_hole,
             $.compound_statement,
             seq($.assignment_statement, ";"),
             $.if_statement,
@@ -147,7 +174,7 @@ module.exports = grammar({
             seq($.variable_statement, ";"),
             $.increment_statement,
             $.decrement_statement
-        ),
+        )),
 
         compound_statement: $ => seq("{", repeat($._statement), "}"),
 
@@ -183,14 +210,18 @@ module.exports = grammar({
         ),
 
         switch_body: $ => choice(
+            $.quilt_hole,
             seq("case", $.case_selectors, optional(":"), $.case_compound_statement),
             seq("default", optional(":"), $.case_compound_statement)
         ),
 
-        case_selectors: $ => seq(
-            $.const_literal,
-            repeat(seq(",", $.const_literal)),
-            optional(",")
+        case_selectors: $ => choice(
+            $.quilt_hole,
+            seq(
+                $.const_literal,
+                repeat(seq(",", $.const_literal)),
+                optional(",")
+            )
         ),
         
         case_compound_statement: $ => seq(
@@ -290,6 +321,7 @@ module.exports = grammar({
         // EXPRESSIONS
 
         _expression: $ => choice(
+            $.quilt_hole,
             $.const_literal,
             $.parenthesized_expression,
             $.type_constructor_or_function_call_expression,
@@ -335,7 +367,7 @@ module.exports = grammar({
                 "array",
                 "<",
                 $.type_declaration,
-                optional(seq(",", choice($.int_literal, $.identifier))),
+                optional(seq(",", choice($.int_literal, $.identifier, $.quilt_hole))),
                 ">"
             ),
             seq("ptr", "<", $.address_space, ",", $.type_declaration, optional(seq(",", $.access_mode)), ">"),
