@@ -72,6 +72,7 @@ module.exports = grammar({
 
         global_constant_declaration: $ => choice(
             seq("let", choice($.identifier, $.variable_identifier_declaration), "=", $.const_expression),
+            seq("const", choice($.identifier, $.variable_identifier_declaration), "=", $.const_expression),
             seq(repeat($.attribute), "override", choice($.identifier, $.variable_identifier_declaration), optional(seq("=", $._expression)))
         ),
         
@@ -87,6 +88,7 @@ module.exports = grammar({
         const_expression: $ => prec.left(choice(
             seq($.type_declaration, "(", optional(seq(repeat(seq($.const_expression, ",")), $.const_expression, optional(","))), ")"),
             $.const_literal,
+            $.quilt_hole,
         )),
 
         function_declaration: $ => seq(
@@ -173,7 +175,9 @@ module.exports = grammar({
             seq($.return_statement, ";"),
             seq($.variable_statement, ";"),
             $.increment_statement,
-            $.decrement_statement
+            $.decrement_statement,
+            // a bare function-call statement, e.g. `atomicStore(&p, 0u);`
+            seq($.type_constructor_or_function_call_expression, ";")
         )),
 
         compound_statement: $ => seq("{", repeat($._statement), "}"),
@@ -370,6 +374,7 @@ module.exports = grammar({
                 optional(seq(",", choice($.int_literal, $.identifier, $.quilt_hole))),
                 ">"
             ),
+            seq("atomic", "<", $.type_declaration, ">"),
             seq("ptr", "<", $.address_space, ",", $.type_declaration, optional(seq(",", $.access_mode)), ">"),
             "sampler",
             "sampler_comparison",

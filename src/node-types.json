@@ -402,6 +402,10 @@
           "named": true
         },
         {
+          "type": "type_constructor_or_function_call_expression",
+          "named": true
+        },
+        {
           "type": "variable_statement",
           "named": true
         },
@@ -559,6 +563,10 @@
           "named": true
         },
         {
+          "type": "type_constructor_or_function_call_expression",
+          "named": true
+        },
+        {
           "type": "variable_statement",
           "named": true
         },
@@ -583,6 +591,10 @@
         },
         {
           "type": "const_literal",
+          "named": true
+        },
+        {
+          "type": "quilt_hole",
           "named": true
         },
         {
@@ -682,6 +694,10 @@
         },
         {
           "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "type_constructor_or_function_call_expression",
           "named": true
         },
         {
@@ -1193,6 +1209,10 @@
         },
         {
           "type": "switch_statement",
+          "named": true
+        },
+        {
+          "type": "type_constructor_or_function_call_expression",
           "named": true
         },
         {
@@ -2234,6 +2254,10 @@
     "named": false
   },
   {
+    "type": "atomic",
+    "named": false
+  },
+  {
     "type": "bitcast",
     "named": false
   },
@@ -2252,6 +2276,10 @@
   },
   {
     "type": "case",
+    "named": false
+  },
+  {
+    "type": "const",
     "named": false
   },
   {

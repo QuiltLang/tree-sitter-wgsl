@@ -189,6 +189,36 @@
           "type": "SEQ",
           "members": [
             {
+              "type": "STRING",
+              "value": "const"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "variable_identifier_declaration"
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "="
+            },
+            {
+              "type": "SYMBOL",
+              "name": "const_expression"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
               "type": "REPEAT",
               "content": {
                 "type": "SYMBOL",
@@ -400,6 +430,10 @@
           {
             "type": "SYMBOL",
             "name": "const_literal"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "quilt_hole"
           }
         ]
       }
@@ -823,6 +857,19 @@
           {
             "type": "SYMBOL",
             "name": "decrement_statement"
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_constructor_or_function_call_expression"
+              },
+              {
+                "type": "STRING",
+                "value": ";"
+              }
+            ]
           }
         ]
       }
@@ -1915,6 +1962,27 @@
                   "type": "BLANK"
                 }
               ]
+            },
+            {
+              "type": "STRING",
+              "value": ">"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "atomic"
+            },
+            {
+              "type": "STRING",
+              "value": "<"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "type_declaration"
             },
             {
               "type": "STRING",
